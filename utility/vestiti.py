@@ -16,8 +16,6 @@ torso_1 = [
     Dress("Maglia barcellona holy tatoo wear", 9, 4),
     Dress("Body righe bianche e nere", 9, 2),
 
-    Dress("Niente", 4, 1)
-
 ]
 
 torso_2 = [

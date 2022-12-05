@@ -1,6 +1,10 @@
 from random import choices, randint, random, randrange
 from utility.logging import progress_bar
 
+def accuracy(item, target, fitness_func):
+    fit_value = fitness_func(item)
+    return 100 * fit_value / target
+
 def generate_genome_range(items):
     genome = []
     for i, item in enumerate(items):

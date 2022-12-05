@@ -4,14 +4,14 @@ from flask import Flask, request, Response
 # custom
 from utility.temperature import get_today_temperature
 from utility.genetic_algorithm import *
-from utility.logging import solution_to_json, suggestion_log
+from utility.logging import solution_to_json
 from utility.vestiti import body_parts
 from utility.geocoding import get_city_coord
 # const
 max_temperature = 30
 min_temperature = -10
 
-iterations = 10
+iterations = 100
 # defaults
 city_default = "Trieste"
 fashion_default = 7
@@ -75,8 +75,8 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
 
     cold_level = (temperature - max_temperature) / (min_temperature - max_temperature)
     cold_level = abs(cold_level * 9) + 1
-    max_warmness = cold_level * len(body_parts)
-
+    max_warmness = round(cold_level * len(body_parts), 0)
+    print(f"Max warmness: {max_warmness}")
     # iterations to prevent death of the whole population giving 0 result (may be removed after optimization)
     for i in range(iterations):
         try:
@@ -92,11 +92,11 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
                 ),
                 selection_func=selection_pair,
                 crossover_func=single_pair_crossover,
-                fintess_limit=70,
+                fintess_limit=max_warmness,
                 generation_limit=100,
                 logging=False
             )
-
+            print(f"Generations: {generations}")
             result = {
                 "target_fashion": fashion,
                 "city": city,
@@ -104,12 +104,16 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
                     "value": temperature,
                     "unit": "celsius",
                 },
+                "accuracy": accuracy(population[0], max_warmness, fitness_func=partial(
+                    fitness, items=body_parts, max_warmness=max_warmness, min_fashion=fashion
+                )),
                 "outfit": solution_to_json(population[0])
             }
             return result
         except ValueError:
-            print("ValueError: items pool error")
-    return Response('{"Error": "E\' molto probabile che i capi di abbigliamento non siano abbastanza bilanciati!"', status=400, mimetype='application/json')
+            print(f"{i}. ValueError: items pool error")
+    print(f"Temperature: {temperature}")
+    return Response('{"Error": "E\' molto probabile che i capi di abbigliamento non siano abbastanza bilanciati!"}', status=400, mimetype='application/json')
         
 
 
