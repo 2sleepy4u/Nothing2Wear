@@ -5,6 +5,13 @@ def accuracy(item, target, fitness_func):
     fit_value = fitness_func(item)
     return 100 * fit_value / target
 
+def fashion_accuracy(item, target, b_parts):
+    fashion = 0
+    for i, el in enumerate(item):
+        dress = b_parts[i][el]
+        fashion += dress.fashion
+    return 100 * (fashion / len(b_parts)) / target
+
 def generate_genome_range(items):
     genome = []
     for i, item in enumerate(items):

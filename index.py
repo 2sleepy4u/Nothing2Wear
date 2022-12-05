@@ -7,14 +7,8 @@ from utility.genetic_algorithm import *
 from utility.logging import solution_to_json
 from utility.vestiti import body_parts
 from utility.geocoding import get_city_coord
-# const
-max_temperature = 30
-min_temperature = -10
+from utility.options import *
 
-iterations = 100
-# defaults
-city_default = "Trieste"
-fashion_default = 7
 # app
 app = Flask(__name__)
 
@@ -82,7 +76,7 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
         try:
             population, generations = run_evolution(
                 populate_func=partial(
-                    generate_population_range, size=70, items=body_parts
+                    generate_population_range, size=population_size, items=body_parts
                 ),
                 fitness_func=partial(
                     fitness, items=body_parts, max_warmness=max_warmness, min_fashion=fashion
@@ -93,7 +87,7 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
                 selection_func=selection_pair,
                 crossover_func=single_pair_crossover,
                 fintess_limit=max_warmness,
-                generation_limit=100,
+                generation_limit=generation_limit,
                 logging=False
             )
             print(f"Generations: {generations}")
@@ -107,6 +101,7 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
                 "accuracy": accuracy(population[0], max_warmness, fitness_func=partial(
                     fitness, items=body_parts, max_warmness=max_warmness, min_fashion=fashion
                 )),
+                "fashion_accuracy": fashion_accuracy(population[0], fashion, body_parts),
                 "outfit": solution_to_json(population[0])
             }
             return result

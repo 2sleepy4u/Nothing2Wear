@@ -23,7 +23,6 @@ torso_2 = [
     Dress("Maglione nero scollato a V", 7, 8),
     Dress("Effe", 7, 8),
     Dress("Gilet vest", 10, 4),
-    Dress("Salopette nera", 10, 4),
     Dress("Camicetta maniche a sbuffo", 10, 4),
     
     Dress("Niente", 5, 1)
