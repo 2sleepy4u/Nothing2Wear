@@ -2,9 +2,14 @@
     <head>
         <meta charset="UTF-8">
         <title>Main</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="{{ url_for('static', filename='js/generate.js') }}"></script>
     </head>
     <body>
+        <div>
+            <a href="/">Home</a>
+            <a href="/form/correct">Correggi</a>
+        </div>
         <div id="myapp"></div>
         <script>
             var today = new Date()
