@@ -9,7 +9,7 @@ def fashion_accuracy(item, target, b_parts):
     fashion = 0
     for i, el in enumerate(item):
         dress = b_parts[i][el]
-        fashion += dress["fashion"]
+        fashion += dress.fashion
     return 100 * (fashion / len(b_parts)) / target
 
 def generate_genome_range(items):
@@ -47,7 +47,7 @@ def mutation(genome, items, num = 1, probability = 0.5):
     return genome
 
 # Fitness
-def fitness(genome, items, max_warmness, min_fashion):
+def fitness(genome, items, max_warmness = 70, min_fashion = 6):
     if len(genome) != len(items):
         raise ValueError("Errore nelle lunghezze")
     fashion = 0
@@ -56,8 +56,8 @@ def fitness(genome, items, max_warmness, min_fashion):
     for i, b_part in enumerate(items):
         dress_index = genome[i]
         dress = b_part[dress_index]
-        warmness += dress["warmness"]
-        fashion += dress["fashion"]
+        warmness += dress.warmness
+        fashion += dress.fashion
 
         if warmness > max_warmness:
             return 0

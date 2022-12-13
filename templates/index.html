@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Main</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/generate.js') }}"></script>
+    </head>
+    <body>
+        <div id="myapp"></div>
+        <script>
+            var today = new Date()
+            var app = Elm.Generate.init({
+                node: document.getElementById('myapp'),
+                flags: today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() 
+            });    
+        </script>
+    </body>
+</html>

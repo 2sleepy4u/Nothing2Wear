@@ -8,4 +8,6 @@ generation_limit = 100
 iterations = 100
 # defaults
 city_default = "Trieste"
-fashion_default = 7
+fashion_default = 3
+
+learning_rate = 0.1

@@ -82,6 +82,16 @@ body_parts = [
     feet_2
 ]
 
+body_parts_index = [
+    "head",
+    "torso_1",
+    "torso_2",
+    "torso_3",
+    "legs",
+    "feet_1",
+    "feet_2"
+]
+
 class_names = [
     "Testa",
     "Torso, primo strato",

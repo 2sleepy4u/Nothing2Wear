@@ -1,33 +1,40 @@
 from functools import partial
 import json
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
+from flask_cors import CORS, cross_origin
+from utility.files import read_from_file, save_to_file
 # custom
 from utility.temperature import get_today_temperature
 from utility.genetic_algorithm import *
 from utility.logging import solution_to_json
-from utility.vestiti import body_parts
+#from data.vestiti import body_parts
 from utility.geocoding import get_city_coord
 from utility.options import *
 
+data_path = "static/data/vestiti.json"
+
+body_parts = read_from_file(data_path)
+
 # app
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder='templates')
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/')
 def index():
-    return "Hello World!"
+    return render_template("index.html")
+
+@app.route("/form/correct")
+def result():
+    return render_template("correct.html")
 
 @app.get('/generate')
+@cross_origin()
 def get_outfit():
     # Inputs data
     fashion     = int(request.args.get('fashion', -1))
-    temperature = int(request.args.get("temperature", 0))
+    temperature = int(request.args.get("temperature", -100))
     city        = request.args.get("city", "")
-
-    print(f"Outfit request for {city} with min fashion {fashion}")
-
-    if city == "":
-        print(f"City error: city not specified")
-        return Response('{"Error": "city not specified"}', status=400, mimetype='application/json')
 
     if fashion == -1:
         print(f"Fashion Error: fashion level not specified")
@@ -37,7 +44,10 @@ def get_outfit():
         print(f"Range error: {fashion} is out of range (1-10)")
         return Response('{"Error": "Fashion level out of range (1-10)"}', status=400, mimetype='application/json')
 
-    return generate_outfit(city, fashion, temperature)
+    if temperature <= -100 and city == "":
+        return Response('{"Error": "Temperature or city not specified"', status=400, mimetype="application/json")
+
+    return generate_outfit(fashion, temperature)
   
 @app.post('/generate')
 def post_outfit():
@@ -46,30 +56,55 @@ def post_outfit():
 
     fashion     = data["fashion"]
     temperature = data["temperature"]
-    city        = data["city"]
-
-    print(f"Outfit request for {city} with min fashion {fashion}")
-
-    if city == "":
-        print(f"City error: city not specified")
-        return Response('{"Error": "city not specified"}', status=400, mimetype='application/json')
-
 
     if fashion > 10 or fashion < 1:
         print(f"Range error: {fashion} is out of range (1-10)")
         return Response('{"Error": "Fashion level out of range (1-10)"}', status=400, mimetype='application/json')
 
-    return generate_outfit(city, fashion, temperature)
+    return generate_outfit(fashion, temperature)
 
+@app.post("/correct")
+def correct():
+    data = request.get_json()
+    #data = json.loads(data)
+    print(data)
+    solution = data["solution"]
+    # -2 to 2
+    rating   = data["rating"]
 
-def generate_outfit(city, fashion = fashion_default, temperature = 0):
-    coords      = get_city_coord(city)
-    temperature = get_today_temperature(coords)
+    error = rating 
+    correct = {}
+    actual = {}
 
+    for i, part in enumerate(body_parts):
+        index = solution[i]
+        dress = part[index]
 
+        value = round(dress["warmness"] + learning_rate * error * dress["warmness"], 1)
+        value_normalized = max(1, value)
+        value_normalized = min(5, value_normalized)
+
+        correct[dress["name"]] = value_normalized
+        actual[dress["name"]] = dress["warmness"]
+
+    result = [
+        actual,
+        correct
+    ]
+
+    for i, itm in enumerate(solution):
+        name = body_parts[i][itm]["name"]
+        body_parts[i][itm]["warmness"] = correct[name]
+     
+    save_to_file(data_path, body_parts)
+
+    return result  
+
+def generate_outfit(fashion = fashion_default, temperature = 0):
     cold_level = (temperature - max_temperature) / (min_temperature - max_temperature)
-    cold_level = abs(cold_level * 9) + 1
+    cold_level = abs(cold_level * 4) + 1
     max_warmness = round(cold_level * len(body_parts), 0)
+
     print(f"Max warmness: {max_warmness}")
     # iterations to prevent death of the whole population giving 0 result (may be removed after optimization)
     for i in range(iterations):
@@ -93,7 +128,6 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
             print(f"Generations: {generations}")
             result = {
                 "target_fashion": fashion,
-                "city": city,
                 "temperature": {
                     "value": temperature,
                     "unit": "celsius",
@@ -102,35 +136,11 @@ def generate_outfit(city, fashion = fashion_default, temperature = 0):
                     fitness, items=body_parts, max_warmness=max_warmness, min_fashion=fashion
                 )),
                 "fashion_accuracy": fashion_accuracy(population[0], fashion, body_parts),
-                "outfit": solution_to_json(population[0])
+                "outfit": solution_to_json(population[0]),
+                "solution": population[0]
             }
             return result
         except ValueError:
-            print(f"{i}. ValueError: items pool error")
-    print(f"Temperature: {temperature}")
+            print(f"{i}. Value error")
     return Response('{"Error": "E\' molto probabile che i capi di abbigliamento non siano abbastanza bilanciati!"}', status=400, mimetype='application/json')
         
-
-
-'''
-# INSERT
-@app.get('/insert')
-def get_insert():
-    data = {}
-    data["name"]        = request.args.get('name', 'untitled')
-    data["fashion"]     = request.args.get('fashion', 6)
-    data["warmness"]    = request.args.get('warmness', 6)
-    data = json.dumps(data)
-    return f"{data}"
-
-@app.post('/insert')
-def post_insert():
-    data = request.get_json()
-    data = json.dumps(data)
-    return f'{data}'
-
-
-@app.route('/update', methods=["POST", "GET"])
-def modifica():
-    return "Qui verranno modificati i vestiti!"
-'''

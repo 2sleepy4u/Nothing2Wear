@@ -1,0 +1,48 @@
+{
+    "head": [
+        {"name": "Cappellino bianco", "fashion": 4, "warmness": 4}, 
+        {"name": "Cappellino mucca", "fashion": 4, "warmness": 4}, 
+        {"name": "Niente", "fashion": 2, "warmness": 0}], 
+    "torso_1": [
+        {"name": "Maglia oversize scheletri", "fashion": 5, "warmness": 2}, 
+        {"name": "Maglia oversize vodoo", "fashion": 5, "warmness": 2}, 
+        {"name": "Maglia palaye royale", "fashion": 4, "warmness": 2}, 
+        {"name": "Maglia barcellona holy tatoo wear", "fashion": 4, "warmness": 2}, 
+        {"name": "Body righe bianche e nere", "fashion": 4, "warmness": 1}], 
+    "torso_2": [
+        {"name": "Camicia bianca", "fashion": 4, "warmness": 2}, 
+        {"name": "Maglione nero scollato a V", "fashion": 4, "warmness": 4}, 
+        {"name": "Effe", "fashion": 4, "warmness": 4}, 
+        {"name": "Gilet vest", "fashion": 5, "warmness": 2}, 
+        {"name": "Camicetta maniche a sbuffo", "fashion": 5, "warmness": 2}, 
+        {"name": "Niente", "fashion": 2, "warmness": 0}], 
+    "torso_3": [
+        {"name": "Felpa wargasm", "fashion": 5, "warmness": 4}, 
+        {"name": "Maglione nero bucato", "fashion": 4, "warmness": 3}, 
+        {"name": "Maglione stone island", "fashion": 4, "warmness": 5}, 
+        {"name": "Maglione marrone rotto", "fashion": 4, "warmness": 2}, 
+        {"name": "Pile beige", "fashion": 2, "warmness": 4}, 
+        {"name": "Felpa fuck god", "fashion": 4, "warmness": 4},
+        {"name": "Felpa grmbuile con colletto", "fashion": 4, "warmness": 4}, 
+        {"name": "Giacca grigia", "fashion": 3, "warmness": 4}, 
+        {"name": "Niente", "fashion": 2, "warmness": 0}], 
+    "legs": [
+        {"name": "Gonna nera", "fashion": 5, "warmness": 2}, 
+        {"name": "Gonna bianca e nera", "fashion": 5, "warmness": 2}, 
+        {"name": "Gonna verde", "fashion": 4, "warmness": 2}, 
+        {"name": "Pantaloni sci", "fashion": 4, "warmness": 5}, 
+        {"name": "Jeans neri zampa", "fashion": 5, "warmness": 4}, 
+        {"name": "Pants a righe verticali", "fashion": 4, "warmness": 4}, 
+        {"name": "Pants a qudri", "fashion": 4, "warmness": 4}, 
+        {"name": "Pants nuovi gagi", "fashion": 4, "warmness": 4}], 
+    "feet_1": [
+        {"name": "Calzini qualsiasi", "fashion": 3, "warmness": 1}, 
+        {"name": "Calzini muccati", "fashion": 4, "warmness": 1}, 
+        {"name": "Calzetti alti neri", "fashion": 4, "warmness": 1}, 
+        {"name": "Calze felpate", "fashion": 4, "warmness": 4}, 
+        {"name": "Antiscivolo verdi", "fashion": 4, "warmness": 4}], 
+    "feet_2": [
+        {"name": "Vans", "fashion": 4, "warmness": 2}, 
+        {"name": "Creepers", "fashion": 5, "warmness": 4}, 
+        {"name": "Anfibi", "fashion": 5, "warmness": 4}]
+    }

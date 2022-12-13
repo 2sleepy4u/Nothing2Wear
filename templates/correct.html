@@ -1,0 +1,97 @@
+<script>
+    window.api_call = "http://127.0.0.1:5000"
+    async function start(fashion, temperature){
+        var res = await fetch(api_call+"/generate?fashion="+fashion+"&temperature="+temperature, {
+            method: "GET",
+            headers: {
+                "content-type": "application/json"
+            }
+        }).then(result => result.json())
+        let el = document.getElementById("results")
+        el.innerHTML += "<h3>" + temperature + "°C</h3>"
+        for(var itm in res.outfit)
+            el.innerHTML += "<h3>" + res.outfit[itm] + "</h3>" 
+        correct = correct.bind(res.solution)
+
+    }
+    async function correct(){
+        var slider = document.getElementById("myRange");
+
+        await fetch(api_call+"/correct", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                solution: this,
+                rating: Number(slider.value)
+            })
+        })
+        window.location.reload()
+
+    }
+
+    f = Math.floor(Math.random() * 4) + 1
+    t = Math.floor(Math.random() * 40) - 10
+    start(f, t)
+</script>
+<body>
+    <div id="results"></div>
+    <div class="slidecontainer">
+        <input type="range" min="-2" max="2" value="0" class="slider" id="myRange">
+        <p>Value: <span id="demo"></span></p>
+    </div>
+    <button onclick="window.location.reload()">Ricarica</button>
+    <button onclick="correct()">Conferma</button>
+</body>
+<script>
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+    output.innerHTML = slider.value;
+    
+    slider.oninput = function() {
+      output.innerHTML = this.value;
+    }
+    </script>
+<style>
+    body {
+        width: 25%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .slidecontainer {
+      width: 100%;
+    }
+    
+    .slider {
+      -webkit-appearance: none;
+      width: 25%;
+      height: 25px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    
+    .slider:hover {
+      opacity: 1;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      background: #04AA6D;
+      cursor: pointer;
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      background: #04AA6D;
+      cursor: pointer;
+    }
+    </style>
