@@ -1,4 +1,8 @@
 module Outfit exposing (..)
+import Html exposing (text)
+
+main =
+    text "ciao"
 
 type alias Outfit = {
     head: String,

@@ -1,17 +1,20 @@
 module Generate exposing (..)
 import Outfit exposing(..)
 import Browser
-import Html exposing (Html, button, div, text, span, input)
-import Html.Events exposing (onClick, onInput)
-import Html.Attributes exposing (..)
+import Html exposing (Html, Attribute, button, div, text, span, input, form, a, label)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Attributes exposing (class, placeholder, href, value, type_, min, id, max)
 import Http
 import Debug exposing (toString)
-import Json.Decode exposing (Decoder, at, map2, field, float, index)
-import Json.Decode exposing (string)
-import Json.Decode exposing (map7)
+import Json.Decode exposing (Decoder, at, map2, field, float, index, string, map7)
 import Json.Encode
 import Stat
 import Json.Encode exposing (object)
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
+import Html.Attributes exposing (for)
 
 
 main : Program String Model Msg
@@ -85,12 +88,41 @@ update msg model =
                 Err e ->
                     (model, Cmd.none)
 
+
 view: Model -> Html Msg
-view model = 
-    div [] [
-        input [ value model.city, onInput ChangeCity] [],
-        input [ value (String.fromInt model.fashion), onInput ChangeFashion] [],
-        button [ onClick ( Geocode model.city) ] [ text "Genera"],
+view model =
+    Grid.container [] [
+        Form.form [] [
+            Form.group [] [
+                Form.label [ for "city"] [ text "Città"],
+                Input.text [ Input.id "city", Input.value model.city, Input.onInput ChangeCity]
+            ],
+            Form.group [] [
+                Form.label [ for "fashion"] [ text "Stile"],
+                Input.number [ Input.id "fashion", Input.value (String.fromInt model.fashion), Input.onInput ChangeFashion]
+            ]
+        ]
+    ]
+
+
+view_: Model -> Html Msg
+view_ model = 
+    form [ class "container form-horizontal", onSubmit ( Geocode model.city)] [
+        div [ class "form-group"] [
+            div [ class "row text-center" ] [
+                a [ href "/" , class "col-6"] [ text "Home" ],
+                a [ href "/form/correct",  class "col-6" ] [ text "Correggi" ]
+            ],
+            div [ class "text-center mt-3"] [
+                input [ value model.city, onInput ChangeCity, placeholder "Città", class "col-12 form-control "] [],
+                label [ for "Fashion", class "form-label" ] [ text ("Fashion: " ++ ( String.fromInt model.fashion )) ],
+                input [ value (String.fromInt model.fashion), onInput ChangeFashion, 
+                        placeholder "Livello fashion", class "col-12 form-control form-range", id "Fashion", Html.Attributes.min "1", Html.Attributes.max "5", type_ "range" ] []
+            ],
+            div [ class "text-center mt-3"] [
+                button [ class "btn btn-primary" ] [ text "Genera"]
+            ]
+        ],
         span [] [ text (outfitToString model.outfit) ]
     ]
 
