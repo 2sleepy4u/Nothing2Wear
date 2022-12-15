@@ -12,7 +12,7 @@
         <div id="myapp"></div>
         <script>
             var today = new Date()
-            var app = Elm.Generate.init({
+            var app = Elm.Main.init({
                 node: document.getElementById('myapp'),
                 flags: today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() 
             });    

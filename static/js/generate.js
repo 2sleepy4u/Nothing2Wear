@@ -5337,20 +5337,21 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Outfit$initOutfit = {feet_1: '', feet_2: '', head: '', legs: '', torso_1: '', torso_2: '', torso_3: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Generate$init = function (currentDate) {
+var $author$project$Main$init = function (currentDate) {
 	return _Utils_Tuple2(
-		{city: '', currentDate: currentDate, fashion: 0, outfit: $author$project$Outfit$initOutfit, temperature: 0},
+		{city: '', currentDate: currentDate, error: '', fashion: 1, outfit: $author$project$Outfit$initOutfit, rating: 0, solution: _List_Nil, temperature: 0},
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Generate$subscriptions = function (model) {
+var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Generate$GotOutfit = function (a) {
+var $author$project$Main$GotOutfit = function (a) {
 	return {$: 'GotOutfit', a: a};
 };
+var $author$project$Main$correctAPI = 'http://127.0.0.1:5000/correct';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -5965,8 +5966,73 @@ var $elm$http$Http$expectJson = F2(
 						A2($elm$json$Json$Decode$decodeString, decoder, string));
 				}));
 	});
-var $elm$core$String$fromFloat = _String_fromNumber;
-var $elm$http$Http$emptyBody = _Http_emptyBody;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2($elm$json$Json$Encode$encode, 0, value));
+};
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$Outfit$Outfit = F7(
+	function (head, torso_1, torso_2, torso_3, legs, feet_1, feet_2) {
+		return {feet_1: feet_1, feet_2: feet_2, head: head, legs: legs, torso_1: torso_1, torso_2: torso_2, torso_3: torso_3};
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$map7 = _Json_map7;
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Main$outfitDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$elm$core$Tuple$pair,
+	A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['outfit']),
+		A8(
+			$elm$json$Json$Decode$map7,
+			$author$project$Outfit$Outfit,
+			A2($elm$json$Json$Decode$field, 'Testa', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Torso, primo strato', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Torso, secondo strato', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Torso, terzo strato', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Gambe', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Calze e calzini', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'Scarpe', $elm$json$Json$Decode$string))),
+	A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['solution']),
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$int)));
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
 };
@@ -6135,122 +6201,55 @@ var $elm$http$Http$request = function (r) {
 		$elm$http$Http$Request(
 			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
 };
-var $elm$http$Http$get = function (r) {
+var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
-		{body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
+		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $author$project$Generate$outfitAPI = 'https://2sleepy.pythonanywhere.com/generate';
-var $author$project$Outfit$Outfit = F7(
-	function (head, torso_1, torso_2, torso_3, legs, feet_1, feet_2) {
-		return {feet_1: feet_1, feet_2: feet_2, head: head, legs: legs, torso_1: torso_1, torso_2: torso_2, torso_3: torso_3};
-	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-	});
-var $elm$json$Json$Decode$map7 = _Json_map7;
-var $author$project$Generate$outfitDecoder = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['outfit']),
-	A8(
-		$elm$json$Json$Decode$map7,
-		$author$project$Outfit$Outfit,
-		A2($elm$json$Json$Decode$field, 'Testa', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Torso, primo strato', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Torso, secondo strato', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Torso, terzo strato', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Gambe', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Calze e calzini', $elm$json$Json$Decode$string),
-		A2($elm$json$Json$Decode$field, 'Scarpe', $elm$json$Json$Decode$string)));
-var $author$project$Generate$generateOutfit = function (model) {
-	return $elm$http$Http$get(
+var $author$project$Main$correctOutfit = function (model) {
+	return $elm$http$Http$post(
 		{
-			expect: A2($elm$http$Http$expectJson, $author$project$Generate$GotOutfit, $author$project$Generate$outfitDecoder),
-			url: $author$project$Generate$outfitAPI + ('?temperature=' + ($elm$core$String$fromFloat(model.temperature) + ('&fashion=' + $elm$core$String$fromInt(model.fashion))))
+			body: $elm$http$Http$jsonBody(
+				$elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'solution',
+							A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$int, model.solution)),
+							_Utils_Tuple2(
+							'rating',
+							$elm$json$Json$Encode$int(model.rating))
+						]))),
+			expect: A2($elm$http$Http$expectJson, $author$project$Main$GotOutfit, $author$project$Main$outfitDecoder),
+			url: $author$project$Main$correctAPI
 		});
 };
-var $author$project$Generate$GotCoords = function (a) {
-	return {$: 'GotCoords', a: a};
-};
-var $author$project$Generate$Coords = F2(
-	function (latitude, longitude) {
-		return {latitude: latitude, longitude: longitude};
-	});
-var $elm$json$Json$Decode$float = _Json_decodeFloat;
-var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $author$project$Generate$coordsDecoder = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['results']),
-	A2(
-		$elm$json$Json$Decode$index,
-		0,
-		A3(
-			$elm$json$Json$Decode$map2,
-			$author$project$Generate$Coords,
-			A2($elm$json$Json$Decode$field, 'latitude', $elm$json$Json$Decode$float),
-			A2($elm$json$Json$Decode$field, 'longitude', $elm$json$Json$Decode$float))));
-var $author$project$Generate$geocode = function (city_name) {
-	return $elm$http$Http$get(
+var $author$project$Main$outfitAPI = 'http://127.0.0.1:5000/generateFromName';
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$generateOutfit = function (model) {
+	return $elm$http$Http$post(
 		{
-			expect: A2($elm$http$Http$expectJson, $author$project$Generate$GotCoords, $author$project$Generate$coordsDecoder),
-			url: 'https://geocoding-api.open-meteo.com/v1/search' + ('?count=1' + ('&name=' + city_name))
+			body: $elm$http$Http$jsonBody(
+				$elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'city',
+							$elm$json$Json$Encode$string(model.city)),
+							_Utils_Tuple2(
+							'fashion',
+							$elm$json$Json$Encode$int(model.fashion))
+						]))),
+			expect: A2($elm$http$Http$expectJson, $author$project$Main$GotOutfit, $author$project$Main$outfitDecoder),
+			url: $author$project$Main$outfitAPI
 		});
 };
-var $author$project$Generate$GotTemperature = function (a) {
-	return {$: 'GotTemperature', a: a};
-};
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Generate$temperatureDecoder = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['hourly']),
-	A2(
-		$elm$json$Json$Decode$at,
-		_List_fromArray(
-			['temperature_2m']),
-		$elm$json$Json$Decode$list($elm$json$Json$Decode$float)));
-var $author$project$Generate$getTemperature = F2(
-	function (coords, model) {
-		return $elm$http$Http$get(
-			{
-				expect: A2($elm$http$Http$expectJson, $author$project$Generate$GotTemperature, $author$project$Generate$temperatureDecoder),
-				url: 'https://api.open-meteo.com/v1/forecast' + ('?hourly=temperature_2m&start_date=' + (model.currentDate + ('&end_date=' + (model.currentDate + ('&latitude=' + ($elm$core$String$fromFloat(coords.latitude) + ('&longitude=' + $elm$core$String$fromFloat(coords.longitude))))))))
-			});
-	});
-var $elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
 };
-var $jxxcarlson$elm_stat$Stat$sumLen = A2(
-	$elm$core$List$foldl,
-	F2(
-		function (x, y) {
-			return A2($elm$core$Tuple$pair, y.a + x, y.b + 1);
-		}),
-	_Utils_Tuple2(0, 0));
-var $jxxcarlson$elm_stat$Stat$mean = function (list) {
-	var _v0 = $jxxcarlson$elm_stat$Stat$sumLen(list);
-	var sum = _v0.a;
-	var len = _v0.b;
-	return (!len) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(sum / len);
-};
-var $elm$core$Basics$round = _Basics_round;
-var $elm$core$Debug$toString = _Debug_toString;
-var $author$project$Generate$update = F2(
+var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'Geocode':
-				var city_name = msg.a;
-				return _Utils_Tuple2(
-					model,
-					$author$project$Generate$geocode(city_name));
 			case 'ChangeCity':
 				var newCity = msg.a;
 				return _Utils_Tuple2(
@@ -6262,83 +6261,70 @@ var $author$project$Generate$update = F2(
 				var newFashion = msg.a;
 				var _v1 = $elm$core$String$toInt(newFashion);
 				if (_v1.$ === 'Just') {
-					var n = _v1.a;
+					var fashion = _v1.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{fashion: n}),
+							{fashion: fashion}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			case 'GotTemperature':
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var res = result.a;
-					var _v3 = $jxxcarlson$elm_stat$Stat$mean(res);
-					if (_v3.$ === 'Just') {
-						var temperature = _v3.a;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									temperature: $elm$core$Basics$round(temperature)
-								}),
-							$author$project$Generate$generateOutfit(model));
-					} else {
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-					}
-				} else {
-					var e = result.a;
+			case 'ChangeRating':
+				var newRating = msg.a;
+				var _v2 = $elm$core$String$toInt(newRating);
+				if (_v2.$ === 'Just') {
+					var rating = _v2.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								city: $elm$core$Debug$toString(e)
-							}),
+							{rating: rating}),
 						$elm$core$Platform$Cmd$none);
-				}
-			case 'GotCoords':
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var coords = result.a;
-					return _Utils_Tuple2(
-						model,
-						A2($author$project$Generate$getTemperature, coords, model));
 				} else {
-					var e = result.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								city: $elm$core$Debug$toString(e)
-							}),
+							{rating: 0}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'Generate':
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$generateOutfit(model));
+			case 'Correct':
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$correctOutfit(model));
 			default:
 				var result = msg.a;
 				if (result.$ === 'Ok') {
-					var outfit = result.a;
+					var res = result.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{outfit: outfit}),
+							{error: '', outfit: res.a, solution: res.b}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var e = result.a;
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{error: 'Errore nella generazione dell\'outfit. Controlla che il nome della città sia scritto correttamente!', outfit: $author$project$Outfit$initOutfit}),
+						$elm$core$Platform$Cmd$none);
 				}
 		}
 	});
-var $author$project$Generate$ChangeCity = function (a) {
+var $author$project$Main$ChangeCity = function (a) {
 	return {$: 'ChangeCity', a: a};
 };
-var $author$project$Generate$ChangeFashion = function (a) {
+var $author$project$Main$ChangeFashion = function (a) {
 	return {$: 'ChangeFashion', a: a};
 };
-var $author$project$Generate$Geocode = function (a) {
-	return {$: 'Geocode', a: a};
+var $author$project$Main$ChangeRating = function (a) {
+	return {$: 'ChangeRating', a: a};
 };
+var $author$project$Main$Correct = {$: 'Correct'};
+var $author$project$Main$Generate = {$: 'Generate'};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $rundis$elm_bootstrap$Bootstrap$Internal$Text$Center = {$: 'Center'};
 var $rundis$elm_bootstrap$Bootstrap$General$Internal$XS = {$: 'XS'};
@@ -6394,7 +6380,6 @@ var $rundis$elm_bootstrap$Bootstrap$Internal$Button$applyModifier = F2(
 					});
 		}
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6608,6 +6593,21 @@ var $rundis$elm_bootstrap$Bootstrap$Form$Input$Id = function (a) {
 var $rundis$elm_bootstrap$Bootstrap$Form$Input$id = function (id_) {
 	return $rundis$elm_bootstrap$Bootstrap$Form$Input$Id(id_);
 };
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$Id = function (a) {
+	return {$: 'Id', a: a};
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$id = function (id_) {
+	return $rundis$elm_bootstrap$Bootstrap$Form$Select$Id(id_);
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$Item = function (a) {
+	return {$: 'Item', a: a};
+};
+var $elm$html$Html$option = _VirtualDom_node('option');
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$item = F2(
+	function (attributes, children) {
+		return $rundis$elm_bootstrap$Bootstrap$Form$Select$Item(
+			A2($elm$html$Html$option, attributes, children));
+	});
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $rundis$elm_bootstrap$Bootstrap$Form$label = F2(
 	function (attributes, children) {
@@ -6625,234 +6625,40 @@ var $rundis$elm_bootstrap$Bootstrap$Internal$Button$Size = function (a) {
 };
 var $rundis$elm_bootstrap$Bootstrap$Button$large = $rundis$elm_bootstrap$Bootstrap$Internal$Button$Size($rundis$elm_bootstrap$Bootstrap$General$Internal$LG);
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$Number = {$: 'Number'};
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$Input = function (a) {
-	return {$: 'Input', a: a};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$OnChange = function (a) {
+	return {$: 'OnChange', a: a};
 };
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$Type = function (a) {
-	return {$: 'Type', a: a};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$onChange = function (toMsg) {
+	return $rundis$elm_bootstrap$Bootstrap$Form$Select$OnChange(toMsg);
 };
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$create = F2(
-	function (tipe, options) {
-		return $rundis$elm_bootstrap$Bootstrap$Form$Input$Input(
-			{
-				options: A2(
-					$elm$core$List$cons,
-					$rundis$elm_bootstrap$Bootstrap$Form$Input$Type(tipe),
-					options)
-			});
-	});
-var $elm$html$Html$input = _VirtualDom_node('input');
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$applyModifier = F2(
-	function (modifier, options) {
-		switch (modifier.$) {
-			case 'Size':
-				var size_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						size: $elm$core$Maybe$Just(size_)
-					});
-			case 'Id':
-				var id_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						id: $elm$core$Maybe$Just(id_)
-					});
-			case 'Type':
-				var tipe = modifier.a;
-				return _Utils_update(
-					options,
-					{tipe: tipe});
-			case 'Disabled':
-				var val = modifier.a;
-				return _Utils_update(
-					options,
-					{disabled: val});
-			case 'Value':
-				var value_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						value: $elm$core$Maybe$Just(value_)
-					});
-			case 'Placeholder':
-				var value_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						placeholder: $elm$core$Maybe$Just(value_)
-					});
-			case 'OnInput':
-				var onInput_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						onInput: $elm$core$Maybe$Just(onInput_)
-					});
-			case 'Validation':
-				var validation_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						validation: $elm$core$Maybe$Just(validation_)
-					});
-			case 'Readonly':
-				var val = modifier.a;
-				return _Utils_update(
-					options,
-					{readonly: val});
-			case 'PlainText':
-				var val = modifier.a;
-				return _Utils_update(
-					options,
-					{plainText: val});
-			default:
-				var attrs_ = modifier.a;
-				return _Utils_update(
-					options,
-					{
-						attributes: _Utils_ap(options.attributes, attrs_)
-					});
-		}
-	});
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$Text = {$: 'Text'};
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$defaultOptions = {attributes: _List_Nil, disabled: false, id: $elm$core$Maybe$Nothing, onInput: $elm$core$Maybe$Nothing, placeholder: $elm$core$Maybe$Nothing, plainText: false, readonly: false, size: $elm$core$Maybe$Nothing, tipe: $rundis$elm_bootstrap$Bootstrap$Form$Input$Text, validation: $elm$core$Maybe$Nothing, value: $elm$core$Maybe$Nothing};
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
+var $rundis$elm_bootstrap$Bootstrap$Internal$Button$Attrs = function (a) {
+	return {$: 'Attrs', a: a};
 };
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
+var $rundis$elm_bootstrap$Bootstrap$Button$attrs = function (attrs_) {
+	return $rundis$elm_bootstrap$Bootstrap$Internal$Button$Attrs(attrs_);
+};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
 };
 var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$stopPropagationOn = F2(
+var $elm$html$Html$Events$preventDefaultOn = F2(
 	function (event, decoder) {
 		return A2(
 			$elm$virtual_dom$VirtualDom$on,
 			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
 	});
-var $elm$html$Html$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $elm$html$Html$Events$onInput = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$Attributes$readonly = $elm$html$Html$Attributes$boolProperty('readOnly');
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$sizeAttribute = function (size) {
-	return A2(
-		$elm$core$Maybe$map,
-		function (s) {
-			return $elm$html$Html$Attributes$class('form-control-' + s);
-		},
-		$rundis$elm_bootstrap$Bootstrap$General$Internal$screenSizeOption(size));
-};
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$typeAttribute = function (inputType) {
-	return $elm$html$Html$Attributes$type_(
-		function () {
-			switch (inputType.$) {
-				case 'Text':
-					return 'text';
-				case 'Password':
-					return 'password';
-				case 'DatetimeLocal':
-					return 'datetime-local';
-				case 'Date':
-					return 'date';
-				case 'Month':
-					return 'month';
-				case 'Time':
-					return 'time';
-				case 'Week':
-					return 'week';
-				case 'Number':
-					return 'number';
-				case 'Email':
-					return 'email';
-				case 'Url':
-					return 'url';
-				case 'Search':
-					return 'search';
-				case 'Tel':
-					return 'tel';
-				default:
-					return 'color';
-			}
-		}());
-};
-var $rundis$elm_bootstrap$Bootstrap$Form$FormInternal$validationToString = function (validation) {
-	if (validation.$ === 'Success') {
-		return 'is-valid';
-	} else {
-		return 'is-invalid';
-	}
-};
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$validationAttribute = function (validation) {
-	return $elm$html$Html$Attributes$class(
-		$rundis$elm_bootstrap$Bootstrap$Form$FormInternal$validationToString(validation));
-};
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$toAttributes = function (modifiers) {
-	var options = A3($elm$core$List$foldl, $rundis$elm_bootstrap$Bootstrap$Form$Input$applyModifier, $rundis$elm_bootstrap$Bootstrap$Form$Input$defaultOptions, modifiers);
-	return _Utils_ap(
+var $rundis$elm_bootstrap$Bootstrap$Button$onClick = function (message) {
+	return $rundis$elm_bootstrap$Bootstrap$Button$attrs(
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class(
-				options.plainText ? 'form-control-plaintext' : 'form-control'),
-				$elm$html$Html$Attributes$disabled(options.disabled),
-				$elm$html$Html$Attributes$readonly(options.readonly || options.plainText),
-				$rundis$elm_bootstrap$Bootstrap$Form$Input$typeAttribute(options.tipe)
-			]),
-		_Utils_ap(
-			A2(
-				$elm$core$List$filterMap,
-				$elm$core$Basics$identity,
-				_List_fromArray(
-					[
-						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$id, options.id),
-						A2($elm$core$Maybe$andThen, $rundis$elm_bootstrap$Bootstrap$Form$Input$sizeAttribute, options.size),
-						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$value, options.value),
-						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$placeholder, options.placeholder),
-						A2($elm$core$Maybe$map, $elm$html$Html$Events$onInput, options.onInput),
-						A2($elm$core$Maybe$map, $rundis$elm_bootstrap$Bootstrap$Form$Input$validationAttribute, options.validation)
-					])),
-			options.attributes));
+				A2(
+				$elm$html$Html$Events$preventDefaultOn,
+				'click',
+				$elm$json$Json$Decode$succeed(
+					_Utils_Tuple2(message, true)))
+			]));
 };
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$view = function (_v0) {
-	var options = _v0.a.options;
-	return A2(
-		$elm$html$Html$input,
-		$rundis$elm_bootstrap$Bootstrap$Form$Input$toAttributes(options),
-		_List_Nil);
-};
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$input = F2(
-	function (tipe, options) {
-		return $rundis$elm_bootstrap$Bootstrap$Form$Input$view(
-			A2($rundis$elm_bootstrap$Bootstrap$Form$Input$create, tipe, options));
-	});
-var $rundis$elm_bootstrap$Bootstrap$Form$Input$number = $rundis$elm_bootstrap$Bootstrap$Form$Input$input($rundis$elm_bootstrap$Bootstrap$Form$Input$Number);
 var $rundis$elm_bootstrap$Bootstrap$Form$Input$OnInput = function (a) {
 	return {$: 'OnInput', a: a};
 };
@@ -6862,16 +6668,6 @@ var $rundis$elm_bootstrap$Bootstrap$Form$Input$onInput = function (toMsg) {
 var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
 	return _Utils_Tuple2(msg, true);
 };
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $elm$html$Html$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
 var $elm$html$Html$Events$onSubmit = function (msg) {
 	return A2(
 		$elm$html$Html$Events$preventDefaultOn,
@@ -7239,6 +7035,16 @@ var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$columnCountOption = function (
 			return $elm$core$Maybe$Just('auto');
 	}
 };
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -7748,6 +7554,584 @@ var $rundis$elm_bootstrap$Bootstrap$Grid$row = F2(
 			$rundis$elm_bootstrap$Bootstrap$Grid$Internal$rowAttributes(options),
 			A2($elm$core$List$map, $rundis$elm_bootstrap$Bootstrap$Grid$renderCol, cols));
 	});
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$Select = function (a) {
+	return {$: 'Select', a: a};
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$create = F2(
+	function (options, items) {
+		return $rundis$elm_bootstrap$Bootstrap$Form$Select$Select(
+			{items: items, options: options});
+	});
+var $elm$html$Html$select = _VirtualDom_node('select');
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$applyModifier = F2(
+	function (modifier, options) {
+		switch (modifier.$) {
+			case 'Size':
+				var size_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						size: $elm$core$Maybe$Just(size_)
+					});
+			case 'Id':
+				var id_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						id: $elm$core$Maybe$Just(id_)
+					});
+			case 'Custom':
+				return _Utils_update(
+					options,
+					{custom: true});
+			case 'Disabled':
+				var val = modifier.a;
+				return _Utils_update(
+					options,
+					{disabled: val});
+			case 'OnChange':
+				var onChange_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						onChange: $elm$core$Maybe$Just(onChange_)
+					});
+			case 'Validation':
+				var validation_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						validation: $elm$core$Maybe$Just(validation_)
+					});
+			default:
+				var attrs_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						attributes: _Utils_ap(options.attributes, attrs_)
+					});
+		}
+	});
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$customEventOnChange = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'change',
+		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$defaultOptions = {attributes: _List_Nil, custom: false, disabled: false, id: $elm$core$Maybe$Nothing, onChange: $elm$core$Maybe$Nothing, size: $elm$core$Maybe$Nothing, validation: $elm$core$Maybe$Nothing};
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$core$Basics$not = _Basics_not;
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$sizeAttribute = F2(
+	function (isCustom, size_) {
+		var prefix = isCustom ? 'custom-select-' : 'form-control-';
+		return A2(
+			$elm$core$Maybe$map,
+			function (s) {
+				return $elm$html$Html$Attributes$class(
+					_Utils_ap(prefix, s));
+			},
+			$rundis$elm_bootstrap$Bootstrap$General$Internal$screenSizeOption(size_));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Form$FormInternal$validationToString = function (validation) {
+	if (validation.$ === 'Success') {
+		return 'is-valid';
+	} else {
+		return 'is-invalid';
+	}
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$validationAttribute = function (validation_) {
+	return $elm$html$Html$Attributes$class(
+		$rundis$elm_bootstrap$Bootstrap$Form$FormInternal$validationToString(validation_));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$toAttributes = function (modifiers) {
+	var options = A3($elm$core$List$foldl, $rundis$elm_bootstrap$Bootstrap$Form$Select$applyModifier, $rundis$elm_bootstrap$Bootstrap$Form$Select$defaultOptions, modifiers);
+	return _Utils_ap(
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$classList(
+				_List_fromArray(
+					[
+						_Utils_Tuple2('form-control', !options.custom),
+						_Utils_Tuple2('custom-select', options.custom)
+					])),
+				$elm$html$Html$Attributes$disabled(options.disabled)
+			]),
+		_Utils_ap(
+			A2(
+				$elm$core$List$filterMap,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$id, options.id),
+						A2(
+						$elm$core$Maybe$andThen,
+						$rundis$elm_bootstrap$Bootstrap$Form$Select$sizeAttribute(options.custom),
+						options.size),
+						A2($elm$core$Maybe$map, $rundis$elm_bootstrap$Bootstrap$Form$Select$customEventOnChange, options.onChange),
+						A2($elm$core$Maybe$map, $rundis$elm_bootstrap$Bootstrap$Form$Select$validationAttribute, options.validation)
+					])),
+			options.attributes));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$view = function (_v0) {
+	var options = _v0.a.options;
+	var items = _v0.a.items;
+	return A2(
+		$elm$html$Html$select,
+		$rundis$elm_bootstrap$Bootstrap$Form$Select$toAttributes(options),
+		A2(
+			$elm$core$List$map,
+			function (_v1) {
+				var e = _v1.a;
+				return e;
+			},
+			items));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Select$select = F2(
+	function (options, items) {
+		return $rundis$elm_bootstrap$Bootstrap$Form$Select$view(
+			A2($rundis$elm_bootstrap$Bootstrap$Form$Select$create, options, items));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Internal$Role$Danger = {$: 'Danger'};
+var $rundis$elm_bootstrap$Bootstrap$Alert$Shown = {$: 'Shown'};
+var $rundis$elm_bootstrap$Bootstrap$Alert$Config = function (a) {
+	return {$: 'Config', a: a};
+};
+var $rundis$elm_bootstrap$Bootstrap$Alert$attrs = F2(
+	function (attributes, _v0) {
+		var configRec = _v0.a;
+		return $rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{attributes: attributes}));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$children = F2(
+	function (children_, _v0) {
+		var configRec = _v0.a;
+		return $rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{children: children_}));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Internal$Role$Secondary = {$: 'Secondary'};
+var $rundis$elm_bootstrap$Bootstrap$Alert$config = $rundis$elm_bootstrap$Bootstrap$Alert$Config(
+	{attributes: _List_Nil, children: _List_Nil, dismissable: $elm$core$Maybe$Nothing, role: $rundis$elm_bootstrap$Bootstrap$Internal$Role$Secondary, visibility: $rundis$elm_bootstrap$Bootstrap$Alert$Shown, withAnimation: false});
+var $rundis$elm_bootstrap$Bootstrap$Alert$role = F2(
+	function (role_, _v0) {
+		var configRec = _v0.a;
+		return $rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{role: role_}));
+	});
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $rundis$elm_bootstrap$Bootstrap$Alert$Closed = {$: 'Closed'};
+var $rundis$elm_bootstrap$Bootstrap$Alert$StartClose = {$: 'StartClose'};
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rundis$elm_bootstrap$Bootstrap$Alert$clickHandler = F2(
+	function (visibility, configRec) {
+		var handleClick = F2(
+			function (viz, toMsg) {
+				return $elm$html$Html$Events$onClick(
+					toMsg(viz));
+			});
+		var _v0 = configRec.dismissable;
+		if (_v0.$ === 'Just') {
+			var dismissMsg = _v0.a;
+			return _List_fromArray(
+				[
+					configRec.withAnimation ? A2(handleClick, $rundis$elm_bootstrap$Bootstrap$Alert$StartClose, dismissMsg) : A2(handleClick, $rundis$elm_bootstrap$Bootstrap$Alert$Closed, dismissMsg)
+				]);
+		} else {
+			return _List_Nil;
+		}
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$injectButton = F2(
+	function (btn, children_) {
+		if (children_.b) {
+			var head = children_.a;
+			var tail = children_.b;
+			return A2(
+				$elm$core$List$cons,
+				head,
+				A2($elm$core$List$cons, btn, tail));
+		} else {
+			return _List_fromArray(
+				[btn]);
+		}
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$isDismissable = function (configRec) {
+	var _v0 = configRec.dismissable;
+	if (_v0.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $rundis$elm_bootstrap$Bootstrap$Alert$maybeAddDismissButton = F3(
+	function (visibilty, configRec, children_) {
+		return $rundis$elm_bootstrap$Bootstrap$Alert$isDismissable(configRec) ? A2(
+			$rundis$elm_bootstrap$Bootstrap$Alert$injectButton,
+			A2(
+				$elm$html$Html$button,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$type_('button'),
+							$elm$html$Html$Attributes$class('close'),
+							A2($elm$html$Html$Attributes$attribute, 'aria-label', 'close')
+						]),
+					A2($rundis$elm_bootstrap$Bootstrap$Alert$clickHandler, visibilty, configRec)),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$attribute, 'aria-hidden', 'true')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('×')
+							]))
+					])),
+			children_) : children_;
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass = F2(
+	function (prefix, role) {
+		return $elm$html$Html$Attributes$class(
+			prefix + ('-' + function () {
+				switch (role.$) {
+					case 'Primary':
+						return 'primary';
+					case 'Secondary':
+						return 'secondary';
+					case 'Success':
+						return 'success';
+					case 'Info':
+						return 'info';
+					case 'Warning':
+						return 'warning';
+					case 'Danger':
+						return 'danger';
+					case 'Light':
+						return 'light';
+					default:
+						return 'dark';
+				}
+			}()));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$viewAttributes = F2(
+	function (visibility, configRec) {
+		var visibiltyAttributes = _Utils_eq(visibility, $rundis$elm_bootstrap$Bootstrap$Alert$Closed) ? _List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$style, 'display', 'none')
+			]) : _List_Nil;
+		var animationAttributes = function () {
+			if (configRec.withAnimation) {
+				var _v0 = configRec.dismissable;
+				if (_v0.$ === 'Just') {
+					var dismissMsg = _v0.a;
+					return _List_fromArray(
+						[
+							A2(
+							$elm$html$Html$Events$on,
+							'transitionend',
+							$elm$json$Json$Decode$succeed(
+								dismissMsg($rundis$elm_bootstrap$Bootstrap$Alert$Closed)))
+						]);
+				} else {
+					return _List_Nil;
+				}
+			} else {
+				return _List_Nil;
+			}
+		}();
+		var alertAttributes = _List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$attribute, 'role', 'alert'),
+				$elm$html$Html$Attributes$classList(
+				_List_fromArray(
+					[
+						_Utils_Tuple2('alert', true),
+						_Utils_Tuple2(
+						'alert-dismissible',
+						$rundis$elm_bootstrap$Bootstrap$Alert$isDismissable(configRec)),
+						_Utils_Tuple2('fade', configRec.withAnimation),
+						_Utils_Tuple2(
+						'show',
+						_Utils_eq(visibility, $rundis$elm_bootstrap$Bootstrap$Alert$Shown))
+					])),
+				A2($rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'alert', configRec.role)
+			]);
+		return $elm$core$List$concat(
+			_List_fromArray(
+				[configRec.attributes, alertAttributes, visibiltyAttributes, animationAttributes]));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$view = F2(
+	function (visibility, _v0) {
+		var configRec = _v0.a;
+		return A2(
+			$elm$html$Html$div,
+			A2($rundis$elm_bootstrap$Bootstrap$Alert$viewAttributes, visibility, configRec),
+			A3($rundis$elm_bootstrap$Bootstrap$Alert$maybeAddDismissButton, visibility, configRec, configRec.children));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$simple = F3(
+	function (role_, attributes, children_) {
+		return A2(
+			$rundis$elm_bootstrap$Bootstrap$Alert$view,
+			$rundis$elm_bootstrap$Bootstrap$Alert$Shown,
+			A2(
+				$rundis$elm_bootstrap$Bootstrap$Alert$children,
+				children_,
+				A2(
+					$rundis$elm_bootstrap$Bootstrap$Alert$attrs,
+					attributes,
+					A2($rundis$elm_bootstrap$Bootstrap$Alert$role, role_, $rundis$elm_bootstrap$Bootstrap$Alert$config))));
+	});
+var $rundis$elm_bootstrap$Bootstrap$Alert$simpleDanger = $rundis$elm_bootstrap$Bootstrap$Alert$simple($rundis$elm_bootstrap$Bootstrap$Internal$Role$Danger);
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$Text = {$: 'Text'};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$Input = function (a) {
+	return {$: 'Input', a: a};
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$Type = function (a) {
+	return {$: 'Type', a: a};
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$create = F2(
+	function (tipe, options) {
+		return $rundis$elm_bootstrap$Bootstrap$Form$Input$Input(
+			{
+				options: A2(
+					$elm$core$List$cons,
+					$rundis$elm_bootstrap$Bootstrap$Form$Input$Type(tipe),
+					options)
+			});
+	});
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$applyModifier = F2(
+	function (modifier, options) {
+		switch (modifier.$) {
+			case 'Size':
+				var size_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						size: $elm$core$Maybe$Just(size_)
+					});
+			case 'Id':
+				var id_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						id: $elm$core$Maybe$Just(id_)
+					});
+			case 'Type':
+				var tipe = modifier.a;
+				return _Utils_update(
+					options,
+					{tipe: tipe});
+			case 'Disabled':
+				var val = modifier.a;
+				return _Utils_update(
+					options,
+					{disabled: val});
+			case 'Value':
+				var value_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						value: $elm$core$Maybe$Just(value_)
+					});
+			case 'Placeholder':
+				var value_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						placeholder: $elm$core$Maybe$Just(value_)
+					});
+			case 'OnInput':
+				var onInput_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						onInput: $elm$core$Maybe$Just(onInput_)
+					});
+			case 'Validation':
+				var validation_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						validation: $elm$core$Maybe$Just(validation_)
+					});
+			case 'Readonly':
+				var val = modifier.a;
+				return _Utils_update(
+					options,
+					{readonly: val});
+			case 'PlainText':
+				var val = modifier.a;
+				return _Utils_update(
+					options,
+					{plainText: val});
+			default:
+				var attrs_ = modifier.a;
+				return _Utils_update(
+					options,
+					{
+						attributes: _Utils_ap(options.attributes, attrs_)
+					});
+		}
+	});
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$defaultOptions = {attributes: _List_Nil, disabled: false, id: $elm$core$Maybe$Nothing, onInput: $elm$core$Maybe$Nothing, placeholder: $elm$core$Maybe$Nothing, plainText: false, readonly: false, size: $elm$core$Maybe$Nothing, tipe: $rundis$elm_bootstrap$Bootstrap$Form$Input$Text, validation: $elm$core$Maybe$Nothing, value: $elm$core$Maybe$Nothing};
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$readonly = $elm$html$Html$Attributes$boolProperty('readOnly');
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$sizeAttribute = function (size) {
+	return A2(
+		$elm$core$Maybe$map,
+		function (s) {
+			return $elm$html$Html$Attributes$class('form-control-' + s);
+		},
+		$rundis$elm_bootstrap$Bootstrap$General$Internal$screenSizeOption(size));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$typeAttribute = function (inputType) {
+	return $elm$html$Html$Attributes$type_(
+		function () {
+			switch (inputType.$) {
+				case 'Text':
+					return 'text';
+				case 'Password':
+					return 'password';
+				case 'DatetimeLocal':
+					return 'datetime-local';
+				case 'Date':
+					return 'date';
+				case 'Month':
+					return 'month';
+				case 'Time':
+					return 'time';
+				case 'Week':
+					return 'week';
+				case 'Number':
+					return 'number';
+				case 'Email':
+					return 'email';
+				case 'Url':
+					return 'url';
+				case 'Search':
+					return 'search';
+				case 'Tel':
+					return 'tel';
+				default:
+					return 'color';
+			}
+		}());
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$validationAttribute = function (validation) {
+	return $elm$html$Html$Attributes$class(
+		$rundis$elm_bootstrap$Bootstrap$Form$FormInternal$validationToString(validation));
+};
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$toAttributes = function (modifiers) {
+	var options = A3($elm$core$List$foldl, $rundis$elm_bootstrap$Bootstrap$Form$Input$applyModifier, $rundis$elm_bootstrap$Bootstrap$Form$Input$defaultOptions, modifiers);
+	return _Utils_ap(
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class(
+				options.plainText ? 'form-control-plaintext' : 'form-control'),
+				$elm$html$Html$Attributes$disabled(options.disabled),
+				$elm$html$Html$Attributes$readonly(options.readonly || options.plainText),
+				$rundis$elm_bootstrap$Bootstrap$Form$Input$typeAttribute(options.tipe)
+			]),
+		_Utils_ap(
+			A2(
+				$elm$core$List$filterMap,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$id, options.id),
+						A2($elm$core$Maybe$andThen, $rundis$elm_bootstrap$Bootstrap$Form$Input$sizeAttribute, options.size),
+						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$value, options.value),
+						A2($elm$core$Maybe$map, $elm$html$Html$Attributes$placeholder, options.placeholder),
+						A2($elm$core$Maybe$map, $elm$html$Html$Events$onInput, options.onInput),
+						A2($elm$core$Maybe$map, $rundis$elm_bootstrap$Bootstrap$Form$Input$validationAttribute, options.validation)
+					])),
+			options.attributes));
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$view = function (_v0) {
+	var options = _v0.a.options;
+	return A2(
+		$elm$html$Html$input,
+		$rundis$elm_bootstrap$Bootstrap$Form$Input$toAttributes(options),
+		_List_Nil);
+};
+var $rundis$elm_bootstrap$Bootstrap$Form$Input$input = F2(
+	function (tipe, options) {
+		return $rundis$elm_bootstrap$Bootstrap$Form$Input$view(
+			A2($rundis$elm_bootstrap$Bootstrap$Form$Input$create, tipe, options));
+	});
 var $rundis$elm_bootstrap$Bootstrap$Form$Input$text = $rundis$elm_bootstrap$Bootstrap$Form$Input$input($rundis$elm_bootstrap$Bootstrap$Form$Input$Text);
 var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$TextAlign = function (a) {
 	return {$: 'TextAlign', a: a};
@@ -7761,7 +8145,7 @@ var $rundis$elm_bootstrap$Bootstrap$Form$Input$Value = function (a) {
 var $rundis$elm_bootstrap$Bootstrap$Form$Input$value = function (value_) {
 	return $rundis$elm_bootstrap$Bootstrap$Form$Input$Value(value_);
 };
-var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col4 = {$: 'Col4'};
+var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col10 = {$: 'Col10'};
 var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$ColWidth = function (a) {
 	return {$: 'ColWidth', a: a};
 };
@@ -7770,8 +8154,10 @@ var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$width = F2(
 		return $rundis$elm_bootstrap$Bootstrap$Grid$Internal$ColWidth(
 			A2($rundis$elm_bootstrap$Bootstrap$Grid$Internal$Width, size, count));
 	});
+var $rundis$elm_bootstrap$Bootstrap$Grid$Col$xs10 = A2($rundis$elm_bootstrap$Bootstrap$Grid$Internal$width, $rundis$elm_bootstrap$Bootstrap$General$Internal$XS, $rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col10);
+var $rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col4 = {$: 'Col4'};
 var $rundis$elm_bootstrap$Bootstrap$Grid$Col$xs4 = A2($rundis$elm_bootstrap$Bootstrap$Grid$Internal$width, $rundis$elm_bootstrap$Bootstrap$General$Internal$XS, $rundis$elm_bootstrap$Bootstrap$Grid$Internal$Col4);
-var $author$project$Generate$view = function (model) {
+var $author$project$Main$view = function (model) {
 	return A2(
 		$rundis$elm_bootstrap$Bootstrap$Grid$container,
 		_List_Nil,
@@ -7813,11 +8199,11 @@ var $author$project$Generate$view = function (model) {
 								$elm$html$Html$a,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$href('/form/correct')
+										$elm$html$Html$Attributes$href('/')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Correct')
+										$elm$html$Html$text('Info')
 									]))
 							]))
 					])),
@@ -7840,8 +8226,7 @@ var $author$project$Generate$view = function (model) {
 				$rundis$elm_bootstrap$Bootstrap$Form$form,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onSubmit(
-						$author$project$Generate$Geocode(model.city))
+						$elm$html$Html$Events$onSubmit($author$project$Main$Generate)
 					]),
 				_List_fromArray(
 					[
@@ -7865,7 +8250,7 @@ var $author$project$Generate$view = function (model) {
 									[
 										$rundis$elm_bootstrap$Bootstrap$Form$Input$id('city'),
 										$rundis$elm_bootstrap$Bootstrap$Form$Input$value(model.city),
-										$rundis$elm_bootstrap$Bootstrap$Form$Input$onInput($author$project$Generate$ChangeCity)
+										$rundis$elm_bootstrap$Bootstrap$Form$Input$onInput($author$project$Main$ChangeCity)
 									]))
 							])),
 						A2(
@@ -7883,13 +8268,50 @@ var $author$project$Generate$view = function (model) {
 									[
 										$elm$html$Html$text('Stile')
 									])),
-								$rundis$elm_bootstrap$Bootstrap$Form$Input$number(
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$select,
 								_List_fromArray(
 									[
-										$rundis$elm_bootstrap$Bootstrap$Form$Input$id('fashion'),
-										$rundis$elm_bootstrap$Bootstrap$Form$Input$value(
-										$elm$core$String$fromInt(model.fashion)),
-										$rundis$elm_bootstrap$Bootstrap$Form$Input$onInput($author$project$Generate$ChangeFashion)
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$id('fashion'),
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$onChange($author$project$Main$ChangeFashion)
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('1')
+											])),
+										A2(
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('2')
+											])),
+										A2(
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('3')
+											])),
+										A2(
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('4')
+											])),
+										A2(
+										$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('5')
+											]))
 									]))
 							])),
 						A2(
@@ -7922,13 +8344,85 @@ var $author$project$Generate$view = function (model) {
 									]))
 							]))
 					])),
-				$author$project$Outfit$outfitToHtml(model.outfit),
+				A2(
+				$rundis$elm_bootstrap$Bootstrap$Grid$row,
+				_List_fromArray(
+					[$rundis$elm_bootstrap$Bootstrap$Grid$Row$centerXs]),
+				_List_fromArray(
+					[
+						A2(
+						$rundis$elm_bootstrap$Bootstrap$Grid$col,
+						_List_fromArray(
+							[
+								$rundis$elm_bootstrap$Bootstrap$Grid$Col$xs10,
+								$rundis$elm_bootstrap$Bootstrap$Grid$Col$textAlign($rundis$elm_bootstrap$Bootstrap$Text$alignXsCenter)
+							]),
+						_List_fromArray(
+							[
+								$author$project$Outfit$outfitToHtml(model.outfit)
+							]))
+					])),
 				(model.outfit.legs !== '') ? A2(
-				$elm$html$Html$div,
+				$rundis$elm_bootstrap$Bootstrap$Grid$container,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$rundis$elm_bootstrap$Bootstrap$Form$Input$number(_List_Nil),
+						A2($elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						$rundis$elm_bootstrap$Bootstrap$Form$label,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$for('mark')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Vota! La scala va da \'Ho avuto un sacco di freddo\' a \'Ho avuto un saccodi caldo\'; lo zero significa che l\'outfit andava bene')
+							])),
+						A2(
+						$rundis$elm_bootstrap$Bootstrap$Form$Select$select,
+						_List_fromArray(
+							[
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$id('mark'),
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$onChange($author$project$Main$ChangeRating)
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('-2')
+									])),
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('-1')
+									])),
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('0')
+									])),
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('1')
+									])),
+								A2(
+								$rundis$elm_bootstrap$Bootstrap$Form$Select$item,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('2')
+									]))
+							])),
 						A2($elm$html$Html$br, _List_Nil, _List_Nil),
 						A2(
 						$rundis$elm_bootstrap$Bootstrap$Grid$row,
@@ -7945,16 +8439,27 @@ var $author$project$Generate$view = function (model) {
 										A2(
 										$rundis$elm_bootstrap$Bootstrap$Button$button,
 										_List_fromArray(
-											[$rundis$elm_bootstrap$Bootstrap$Button$primary, $rundis$elm_bootstrap$Bootstrap$Button$block, $rundis$elm_bootstrap$Bootstrap$Button$large]),
+											[
+												$rundis$elm_bootstrap$Bootstrap$Button$primary,
+												$rundis$elm_bootstrap$Bootstrap$Button$block,
+												$rundis$elm_bootstrap$Bootstrap$Button$large,
+												$rundis$elm_bootstrap$Bootstrap$Button$onClick($author$project$Main$Correct)
+											]),
 										_List_fromArray(
 											[
 												$elm$html$Html$text('Valuta')
 											]))
 									]))
 							]))
-					])) : A2($elm$html$Html$div, _List_Nil, _List_Nil)
+					])) : ((model.error !== '') ? A2(
+				$rundis$elm_bootstrap$Bootstrap$Alert$simpleDanger,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(model.error)
+					])) : A2($elm$html$Html$div, _List_Nil, _List_Nil))
 			]));
 };
-var $author$project$Generate$main = $elm$browser$Browser$element(
-	{init: $author$project$Generate$init, subscriptions: $author$project$Generate$subscriptions, update: $author$project$Generate$update, view: $author$project$Generate$view});
-_Platform_export({'Generate':{'init':$author$project$Generate$main($elm$json$Json$Decode$string)(0)}});}(this));
+var $author$project$Main$main = $elm$browser$Browser$element(
+	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$string)(0)}});}(this));

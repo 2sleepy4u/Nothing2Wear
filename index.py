@@ -63,6 +63,30 @@ def post_outfit():
 
     return generate_outfit(fashion, temperature)
 
+
+@app.post("/generateFromName")
+def generate_from_name():
+    data = request.get_json()
+
+    try:
+        fashion     = data["fashion"]
+        city_name   = data["city"]
+
+        valid = validate_values(fashion)
+
+        if valid != True:
+            return valid
+
+        coords = get_city_coord(city_name)
+        temperature = get_today_temperature(coords)
+
+
+    except:
+        return Response('{"Error": "Errore"}')
+
+    return generate_outfit(fashion, temperature)
+
+
 @app.post("/correct")
 def correct():
     data = request.get_json()
@@ -99,6 +123,17 @@ def correct():
     save_to_file(data_path, body_parts)
 
     return result  
+
+def validate_values(fashion):
+    if fashion == -1:
+        print(f"Fashion Error: fashion level not specified")
+        return Response('{"Error": "fashion level not specified"}', status=400, mimetype='application/json')
+
+    if fashion > 10 or fashion < 1:
+        print(f"Range error: {fashion} is out of range (1-10)")
+        return Response('{"Error": "Fashion level out of range (1-10)"}', status=400, mimetype='application/json')
+    
+    return True
 
 def generate_outfit(fashion = fashion_default, temperature = 0):
     cold_level = (temperature - max_temperature) / (min_temperature - max_temperature)
