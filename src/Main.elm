@@ -172,8 +172,14 @@ view model =
 
 -- HTTP API CALLS
 
-outfitAPI = "http://127.0.0.1:5000/generateFromName"
-correctAPI = "http://127.0.0.1:5000/correct"
+outfitAPI_test = "http://127.0.0.1:5000/generateFromName"
+correctAPI_test = "http://127.0.0.1:5000/correct"
+
+outfitAPI: String
+outfitAPI = "http://2sleepy.pythonanywhere.com/generateFromName"
+correctAPI: String
+correctAPI = "http://2sleepy.pythonanywhere.com/correct"
+
 generateOutfit: Model -> Cmd Msg
 generateOutfit model = 
     Http.post {

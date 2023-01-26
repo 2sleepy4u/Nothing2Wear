@@ -5035,6 +5035,9 @@ var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Outfit$main = $elm$html$Html$text('ciao');
 var $elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
 };
@@ -5351,7 +5354,7 @@ var $author$project$Main$subscriptions = function (model) {
 var $author$project$Main$GotOutfit = function (a) {
 	return {$: 'GotOutfit', a: a};
 };
-var $author$project$Main$correctAPI = 'http://127.0.0.1:5000/correct';
+var $author$project$Main$correctAPI = 'http://2sleepy.pythonanywhere.com/correct';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6223,7 +6226,7 @@ var $author$project$Main$correctOutfit = function (model) {
 			url: $author$project$Main$correctAPI
 		});
 };
-var $author$project$Main$outfitAPI = 'http://127.0.0.1:5000/generateFromName';
+var $author$project$Main$outfitAPI = 'http://2sleepy.pythonanywhere.com/generateFromName';
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$generateOutfit = function (model) {
 	return $elm$http$Http$post(
@@ -6677,8 +6680,6 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 			$elm$html$Html$Events$alwaysPreventDefault,
 			$elm$json$Json$Decode$succeed(msg)));
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Outfit$outfitToHtml = function (outfit) {
 	return A2(
 		$elm$html$Html$div,
@@ -8462,4 +8463,4 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$string)(0)}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$string)(0)},'Outfit':{'init':_VirtualDom_init($author$project$Outfit$main)(0)(0)}});}(this));
